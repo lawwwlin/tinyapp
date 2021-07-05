@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/lawwwlin/tinyapp/issues"
   },
-  "homepage": "https://github.com/lawwwlin/tinyapp#readme"
+  "homepage": "https://github.com/lawwwlin/tinyapp#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
 }
