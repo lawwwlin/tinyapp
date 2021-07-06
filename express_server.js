@@ -41,8 +41,13 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/:shortURL", (req, res) => {
-  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
-  res.render("urls_show", templateVars);
+  if () {
+    const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
+    res.render("urls_show", templateVars);
+  } else {
+    const templateVars = { shortURL: req.params.shortURL, longURL: 'The Shotened URL Does Not Exist' };
+    res.render("urls_dne", templateVars);
+  }
 });
 
 app.post("/urls", (req, res) => {
