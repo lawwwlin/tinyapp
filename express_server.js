@@ -41,13 +41,22 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/:shortURL", (req, res) => {
-  if (urlDatabase[req.params.shortURL]) {
-    const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
+  const url = req.params.shortURL;
+  if (urlDatabase[url]) {
+    const templateVars = { shortURL: url, longURL: urlDatabase[url] };
     res.render("urls_show", templateVars);
   } else {
-    const templateVars = { shortURL: req.params.shortURL, longURL: 'The Shotened URL Does Not Exist' };
+    const templateVars = { shortURL: url, longURL: 'The Shotened URL Does Not Exist' };
     res.render("urls_dne", templateVars);
   }
+});
+
+app.post("/urls/:shortURL", (req, res) => {
+  const url = req.params.shortURL;
+  console.log(req.body);
+  console.log(req.body.newUrl);
+  urlDatabase[url] = req.body.newUrl;
+  res.redirect(`/urls/${url}`);
 });
 
 app.post("/urls", (req, res) => {
@@ -62,8 +71,7 @@ app.get("/u/:shortURL", (req, res) => {
   if (urlDatabase[req.params.shortURL]) {
     const longURL = urlDatabase[req.params.shortURL];
     res.redirect(longURL);
-  } 
-  else {
+  } else {
     const templateVars = { shortURL: req.params.shortURL, longURL: 'The Shortened URL Does Not Exist' };
     res.render("urls_dne", templateVars);
   }

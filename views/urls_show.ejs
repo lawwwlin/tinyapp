@@ -3,6 +3,48 @@
 <head>
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+
+  <style>
+    .button {
+      display: inline-block;
+      border-radius: 4px;
+      background-color: white;
+      border: 2px solid #f44336; /* Green */
+      color: #f44336;
+      text-align: center;
+      width: 200px;
+      transition: all 0.5s;
+      transition-duration: 0.4s;
+      cursor: pointer;
+      margin: 5px;
+    }
+    
+    .button span {
+      cursor: pointer;
+      display: inline-block;
+      position: relative;
+      transition: 0.5s;
+    }
+    
+    .button span:after {
+      content: '\00bb';
+      position: absolute;
+      opacity: 0;
+      top: 0;
+      right: -20px;
+      transition: 0.5s;
+    }
+    
+    .button:hover span {
+      padding-right: 25px;
+    }
+    
+    .button:hover span:after {
+      opacity: 1;
+      right: 0;
+    }
+    </style>
+
   <title>URL - TinyApp Example</title>
 </head>
 
@@ -16,6 +58,10 @@
         <h5 class="card-title">TinyURL for: <%= longURL %></h5>
         <p class="card-text">Short URL: <a href="/u/<%= shortURL %>"><%= shortURL %></a></p>
       </div>
+      <div><form method="POST" action="/urls/<%= shortURL %>">
+        <input name="newUrl" />
+        <button type="submit" class="button"><span>Edit</span></button>
+        </form></div>
       <p class="card-text"><a href="/urls/new">Create a New Short Link</a></p>
     <div class="card-footer text-muted"></div>
   </div>
