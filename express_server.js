@@ -4,7 +4,7 @@ const PORT = 8080; // default port 8080
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
 
-const morgan = requrie('morgan');
+const morgan = require('morgan');
 app.use(morgan('dev'));
 
 // from Stack Overflow https://stackoverflow.com/questions/1349404/generate-random-string-characters-in-javascript
