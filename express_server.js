@@ -58,10 +58,10 @@ app.get("/u/:shortURL", (req, res) => {
     const longURL = urlDatabase[req.params.shortURL];
     res.redirect(longURL);
   } 
-  // else {
-  //   console.log(res.statusCode);
-  //   res.send(`<html><body>error: ${res.statusCode}</b></body></html>\n`);
-  // }
+  else {
+    const templateVars = { shortURL: req.params.shortURL, longURL: 'The Shotened URL Does Not Exist' };
+    res.render("urls_dne", templateVars);
+  }
 });
 
 app.listen(PORT, () => {
