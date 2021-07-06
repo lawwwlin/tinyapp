@@ -1,9 +1,13 @@
-const express = require("express");
+const express = require('express');
 const app = express();
 const PORT = 8080; // default port 8080
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
 
+const morgan = requrie('morgan');
+app.use(morgan('dev'));
+
+// from Stack Overflow https://stackoverflow.com/questions/1349404/generate-random-string-characters-in-javascript
 const generateRandomString = () => {
   return Math.random().toString(36).substr(2, 6);
 };
@@ -50,8 +54,14 @@ app.post("/urls", (req, res) => {
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  const longURL = urlDatabase[req.params.shortURL];
-  res.redirect(longURL);
+  if (urlDatabase[req.params.shortURL]) {
+    const longURL = urlDatabase[req.params.shortURL];
+    res.redirect(longURL);
+  } 
+  // else {
+  //   console.log(res.statusCode);
+  //   res.send(`<html><body>error: ${res.statusCode}</b></body></html>\n`);
+  // }
 });
 
 app.listen(PORT, () => {
