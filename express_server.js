@@ -64,7 +64,7 @@ app.get("/u/:shortURL", (req, res) => {
     res.redirect(longURL);
   } 
   else {
-    const templateVars = { shortURL: req.params.shortURL, longURL: 'The Shotened URL Does Not Exist' };
+    const templateVars = { shortURL: req.params.shortURL, longURL: 'The Shortened URL Does Not Exist' };
     res.render("urls_dne", templateVars);
   }
 });
