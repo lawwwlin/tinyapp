@@ -14,6 +14,17 @@ const generateRandomString = () => {
   return Math.random().toString(36).substr(2, 6);
 };
 
+// from Lecture: HTTP Cookies & User Authentication - W03D3 by Andy Lindsay
+const findUserByEmail = (email) => {
+  for (const userId in users) {
+    const user = users[userId];
+    if (user.email === email) {
+      return user;
+    }
+  }
+  return null;
+};
+
 app.set("view engine", "ejs");
 
 const urlDatabase = {
@@ -123,6 +134,7 @@ app.post("/logout", (req, res) => {
 app.get("/register", (req, res) => {
   const templateVars = {
     user: users[req.cookies["user_id"]],
+    error: ""
     };
   res.render("urls_register", templateVars);
 });
@@ -131,6 +143,26 @@ app.post("/register", (req, res) => {
   const id = generateRandomString();
   const email = req.body.email;
   const password = req.body.password;
+
+  if (!email || !password) {
+    const templateVars = {
+      user: users[req.cookies["user_id"]],
+      error: "ERROR 400, Email or Password Field is Empty",
+      };
+    res.render("urls_register", templateVars)
+    return;
+  }
+
+  const user = findUserByEmail(email);
+  if (user) {
+    const templateVars = {
+      user: users[req.cookies["user_id"]],
+      error: "ERROR 400, The Account Already Exist",
+      };
+    res.render("urls_register", templateVars)
+    return;
+  }
+
   users[id] = {
     id,
     email,

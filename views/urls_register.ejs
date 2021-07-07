@@ -29,8 +29,10 @@
           <label><b>Email</b></label><input type="email" name="email" placeholder="Enter Email"><br /><br />
           <label><b>Password</b></label><input type="password" name="password" placeholder="Enter Password"><br /><br />
           <button type="submit" class="button" style="vertical-align:middle; width: 200px"><span>Create Account</span></button></form>
+          <% if(error) { %>
+            <h5 style="color: red"><%= error%></h5>
+          <% } %>
       </div>
-      <p class="card-text"><a href="/urls/new">Create a New Short Link</a></p>
     <div class="card-footer text-muted"></div>
   </div>
   <!-- Bootstrap JS -->
