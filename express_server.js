@@ -81,7 +81,8 @@ app.get("/urls/:shortURL", (req, res) => {
     const templateVars = {
       user: users[req.cookies["user_id"]],
       shortURL: url,
-      longURL: 'The Shotened URL Does Not Exist' };
+      longURL: 'The Shotened URL Does Not Exist' 
+    };
     res.render("urls_dne", templateVars);
   }
 });
@@ -135,7 +136,7 @@ app.get("/register", (req, res) => {
   const templateVars = {
     user: users[req.cookies["user_id"]],
     error: ""
-    };
+  };
   res.render("urls_register", templateVars);
 });
 
@@ -148,7 +149,7 @@ app.post("/register", (req, res) => {
     const templateVars = {
       user: users[req.cookies["user_id"]],
       error: "ERROR 400, Email or Password Field is Empty",
-      };
+    };
     res.render("urls_register", templateVars)
     return;
   }
@@ -158,7 +159,7 @@ app.post("/register", (req, res) => {
     const templateVars = {
       user: users[req.cookies["user_id"]],
       error: "ERROR 400, The Account Already Exist",
-      };
+    };
     res.render("urls_register", templateVars)
     return;
   }
@@ -171,6 +172,13 @@ app.post("/register", (req, res) => {
   res.cookie("user_id", id);
   console.log(users);
   res.redirect("/urls");
+});
+
+app.get("/login", (req, res) => {
+  const templateVars = {
+    user: users[req.cookies["user_id"]],
+  };
+  res.render("urls_login", templateVars);
 });
 
 app.listen(PORT, () => {
