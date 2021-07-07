@@ -50,8 +50,8 @@
       </div>
     </div>
     <div>
-      <% if(username) { %>
-        <form method="post" action="/logout">Logged In As: <%= username %><button class="button"> <span>Logout</span>
+      <% if(user) { %>
+        <form method="post" action="/logout">Logged In As: <%= user.email %><button class="button"> <span>Logout</span>
         </button></form>
       <% } else { %>
         <form method="post" action="/login"><input type="text" name="username" placeholder="username"><button class="button"><span>Login</span>

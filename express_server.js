@@ -48,13 +48,13 @@ app.get("/hello", (req, res) => {
 
 app.get("/urls", (req, res) => {
   const templateVars = {
-    username: req.cookies["username"],
+    user: users[req.cookies["user_id"]],
     urls: urlDatabase };
   res.render("urls_index", templateVars);
 });
 
 app.get("/urls/new", (req, res) => {
-  const templateVars = { username: req.cookies["username"] };
+  const templateVars = { user: users[req.cookies["user_id"]], };
   res.render("urls_new", templateVars);
 });
 
@@ -62,13 +62,13 @@ app.get("/urls/:shortURL", (req, res) => {
   const url = req.params.shortURL;
   if (urlDatabase[url]) {
     const templateVars = {
-      username: req.cookies["username"],
+      user: users[req.cookies["user_id"]],
       shortURL: url,
       longURL: urlDatabase[url] };
     res.render("urls_show", templateVars);
   } else {
     const templateVars = {
-      username: req.cookies["username"],
+      user: users[req.cookies["user_id"]],
       shortURL: url,
       longURL: 'The Shotened URL Does Not Exist' };
     res.render("urls_dne", templateVars);
@@ -86,7 +86,7 @@ app.post("/urls", (req, res) => {
   const longURL = req.body.longURL;
   urlDatabase[shortURL] = longURL;
   const templateVars = { 
-    username: req.cookies["username"],
+    user: users[req.cookies["user_id"]],
     shortURL: shortURL,
     longURL: longURL };
   res.render("urls_show", templateVars);
@@ -98,7 +98,7 @@ app.get("/u/:shortURL", (req, res) => {
     res.redirect(longURL);
   } else {
     const templateVars = {
-      username: req.cookies["username"],
+      user: users[req.cookies["user_id"]],
       shortURL: req.params.shortURL,
       longURL: 'The Shortened URL Does Not Exist' };
     res.render("urls_dne", templateVars);
@@ -122,7 +122,7 @@ app.post("/logout", (req, res) => {
 
 app.get("/register", (req, res) => {
   const templateVars = {
-    username: req.cookies["username"],
+    user: users[req.cookies["user_id"]],
     };
   res.render("urls_register", templateVars);
 });
