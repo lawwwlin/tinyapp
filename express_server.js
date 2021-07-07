@@ -3,6 +3,8 @@ const app = express();
 const PORT = 8080; // default port 8080
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
+const cookieParser = require('cookie-parser')
+app.use(cookieParser())
 
 const morgan = require('morgan');
 app.use(morgan('dev'));
@@ -32,7 +34,9 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  const templateVars = { urls: urlDatabase };
+  const templateVars = {
+    username: req.cookies["username"],
+    urls: urlDatabase };
   res.render("urls_index", templateVars);
 });
 
@@ -43,10 +47,16 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls/:shortURL", (req, res) => {
   const url = req.params.shortURL;
   if (urlDatabase[url]) {
-    const templateVars = { shortURL: url, longURL: urlDatabase[url] };
+    const templateVars = {
+      username: req.cookies["username"],
+      shortURL: url,
+      longURL: urlDatabase[url] };
     res.render("urls_show", templateVars);
   } else {
-    const templateVars = { shortURL: url, longURL: 'The Shotened URL Does Not Exist' };
+    const templateVars = {
+      username: req.cookies["username"],
+      shortURL: url,
+      longURL: 'The Shotened URL Does Not Exist' };
     res.render("urls_dne", templateVars);
   }
 });
@@ -61,7 +71,10 @@ app.post("/urls", (req, res) => {
   const shortURL = generateRandomString();
   const longURL = req.body.longURL;
   urlDatabase[shortURL] = longURL;
-  const templateVars = { shortURL: shortURL, longURL: longURL };
+  const templateVars = { 
+    username: req.cookies["username"],
+    shortURL: shortURL,
+    longURL: longURL };
   res.render("urls_show", templateVars);
 });
 
@@ -70,13 +83,21 @@ app.get("/u/:shortURL", (req, res) => {
     const longURL = urlDatabase[req.params.shortURL];
     res.redirect(longURL);
   } else {
-    const templateVars = { shortURL: req.params.shortURL, longURL: 'The Shortened URL Does Not Exist' };
+    const templateVars = {
+      username: req.cookies["username"],
+      shortURL: req.params.shortURL,
+      longURL: 'The Shortened URL Does Not Exist' };
     res.render("urls_dne", templateVars);
   }
 });
 
 app.post("/urls/:shortURL/delete", (req, res) => {
   delete urlDatabase[req.params.shortURL];
+  res.redirect("/urls");
+});
+
+app.post("/login", (req, res) => {
+  res.cookie("username", req.body.username);
   res.redirect("/urls");
 });
 
