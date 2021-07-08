@@ -72,7 +72,7 @@ const users = {
 }
 
 app.get("/", (req, res) => {
-  res.send("Hello!");
+  res.redirect("/urls");
 });
 
 app.get("/urls.json", (req, res) => {
@@ -114,8 +114,7 @@ app.get("/urls", (req, res) => {
 app.get("/urls/new", (req, res) => {
   const userID = req.cookies.user_id;
   if (!userID) {
-    res.redirect("/login");
-    return;
+    return res.redirect("/login");
   }
 
   const templateVars = { user: users[req.cookies["user_id"]], };
