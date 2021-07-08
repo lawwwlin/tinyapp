@@ -3,8 +3,8 @@ const app = express();
 const PORT = 8080; // default port 8080
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
-const cookieParser = require('cookie-parser')
-app.use(cookieParser())
+const cookieParser = require('cookie-parser');
+app.use(cookieParser());
 
 const morgan = require('morgan');
 app.use(morgan('dev'));
@@ -49,27 +49,27 @@ app.set("view engine", "ejs");
 
 const urlDatabase = {
   b6UTxQ: {
-      longURL: "https://www.tsn.ca",
-      userID: "aaaaa"
+    longURL: "https://www.tsn.ca",
+    userID: "aaaaa"
   },
   i3BoGr: {
-      longURL: "https://www.google.ca",
-      userID: "aaaaa"
+    longURL: "https://www.google.ca",
+    userID: "aaaaa"
   }
 };
 
-const users = { 
+const users = {
   "aaaaa": {
-    id: "aaaaa", 
-    email: "a@a.com", 
+    id: "aaaaa",
+    email: "a@a.com",
     password: "1234"
   },
- "bbbbb": {
-    id: "bbbbb", 
-    email: "b@b.com", 
+  "bbbbb": {
+    id: "bbbbb",
+    email: "b@b.com",
     password: "1234"
   }
-}
+};
 
 app.get("/", (req, res) => {
   res.redirect("/urls");
@@ -77,10 +77,6 @@ app.get("/", (req, res) => {
 
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
-});
-
-app.get("/hello", (req, res) => {
-  res.send("<html><body>Hello <b>World</b></body></html>\n");
 });
 
 app.get("/urls", (req, res) => {
@@ -104,7 +100,7 @@ app.get("/urls", (req, res) => {
     return res.render("urls_index", templateVars);
   }
 
-  if (!userUrls){
+  if (!userUrls) {
     return res.render("urls_index", templateVars);
   }
 
@@ -173,7 +169,7 @@ app.post("/urls/:shortURL", (req, res) => {
     return res.status(401).send(`You don't have access to the shortened URL: ${url}\n`);
   }
   
-  urlDatabase[url] = { 
+  urlDatabase[url] = {
     userID,
     longURL: req.body.newUrl
   };
@@ -190,16 +186,16 @@ app.post("/urls", (req, res) => {
   const shortURL = generateRandomString();
   const longURL = req.body.longURL;
 
-  urlDatabase[shortURL] = { 
+  urlDatabase[shortURL] = {
     userID,
     longURL
   };
 
-  const templateVars = { 
+  const templateVars = {
     shortURL,
     longURL,
     user: users[userID]
-    };
+  };
   res.render("urls_show", templateVars);
 });
 
@@ -245,9 +241,9 @@ app.post("/login", (req, res) => {
     }
   }
 
-  const templateVars = { 
+  const templateVars = {
     user: users[req.cookies["user_id"]],
-    error: "ERROR 403, Incorrect Email or Password" 
+    error: "ERROR 403, Incorrect Email or Password"
   };
 
   res.render("urls_login", templateVars);
@@ -276,7 +272,7 @@ app.post("/register", (req, res) => {
       user: users[req.cookies["user_id"]],
       error: "ERROR 400, Email or Password field is empty",
     };
-    res.render("urls_register", templateVars)
+    res.render("urls_register", templateVars);
     return;
   }
 
@@ -286,7 +282,7 @@ app.post("/register", (req, res) => {
       user: users[req.cookies["user_id"]],
       error: "ERROR 400, The account already exist",
     };
-    res.render("urls_register", templateVars)
+    res.render("urls_register", templateVars);
     return;
   }
 
