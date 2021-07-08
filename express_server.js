@@ -166,7 +166,7 @@ app.post("/urls/:shortURL", (req, res) => {
   }
 
   if (userID !== urlDatabase[url].userID) {
-    return res.status(401).send(`You don't have access to the shortened URL: ${url}\n`);
+    return res.status(403).send(`You don't have access to the shortened URL: ${url}\n`);
   }
   
   urlDatabase[url] = {
@@ -222,7 +222,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   }
 
   if (userID !== urlDatabase[url].userID) {
-    return res.status(401).send("Stop hacking!!! You are deleting other people's URL...\n");
+    return res.status(403).send("Stop hacking!!! You are deleting other people's URL...\n");
   }
 
   delete urlDatabase[url];
