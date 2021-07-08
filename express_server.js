@@ -131,7 +131,7 @@ app.get("/urls/:shortURL", (req, res) => {
     return res.redirect("/urls");
   }
 
-  if (userID !== urlDatabase[url].userID) {
+  if (!urlDatabase[url] || userID !== urlDatabase[url].userID) {
     const templateVars = {
       urls,
       user: users[userID],
