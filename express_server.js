@@ -118,7 +118,7 @@ app.get("/urls/new", (req, res) => {
     return res.redirect("/login");
   }
 
-  const templateVars = { user: users[req.session["user_id"]], };
+  const templateVars = { user: users[req.session.user_id], };
   res.render("urls_new", templateVars);
 });
 
@@ -138,7 +138,7 @@ app.get("/urls/:shortURL", (req, res) => {
 
   if (!urlDatabase[url]) {
     const templateVars = {
-      user: users[req.session["user_id"]],
+      user: users[userID],
       shortURL: url,
       longURL: 'ERROR 404! The shortened URL does not exist'
     };
@@ -155,7 +155,7 @@ app.get("/urls/:shortURL", (req, res) => {
   }
 
   const templateVars = {
-    user: users[req.session["user_id"]],
+    user: users[userID],
     shortURL: url,
     longURL: urlDatabase[url].longURL
   };
@@ -205,12 +205,14 @@ app.post("/urls", (req, res) => {
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  if (urlDatabase[req.params.shortURL]) {
-    const longURL = urlDatabase[req.params.shortURL].longURL;
+  const userID = req.session.user_id;
+
+  if (urlDatabase[userID]) {
+    const longURL = urlDatabase[userID].longURL;
     res.redirect(longURL);
   } else {
     const templateVars = {
-      user: users[req.session["user_id"]],
+      user: users[userID],
       shortURL: req.params.shortURL,
       longURL: 'ERROR 404! The shortened URL does not exist'
     };
@@ -235,13 +237,14 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
+  const userID = req.session.user_id;
   const email = req.body.email;
   const user = findUserByEmail(email);
   const password = req.body.password;
 
   if (!email || !password || !user) {
     const templateVars = {
-      user: users[req.session["user_id"]],
+      user: users[userID],
       error: "ERROR 400, Incorrect Email or Password"
     };
   
@@ -251,7 +254,7 @@ app.post("/login", (req, res) => {
   bcrypt.compare(password, user.password, (err, result) => {
     if (!result) {
       const templateVars = {
-        user: users[req.session["user_id"]],
+        user: users[userID],
         error: "ERROR 400, Incorrect Email or Password"
       };
     
@@ -278,7 +281,7 @@ app.get("/register", (req, res) => {
   }
 
   const templateVars = {
-    user: users[req.session["user_id"]],
+    user: users[userID],
     error: ""
   };
   res.render("urls_register", templateVars);
@@ -288,10 +291,11 @@ app.post("/register", (req, res) => {
   const id = generateRandomString();
   const email = req.body.email;
   const password = req.body.password;
+  const userID = req.session.user_id;
   
   if (!email || !password) {
     const templateVars = {
-      user: users[req.session["user_id"]],
+      user: users[userID],
       error: "ERROR 400, Email or Password field is empty",
     };
     res.render("urls_register", templateVars);
@@ -301,7 +305,7 @@ app.post("/register", (req, res) => {
   const user = findUserByEmail(email);
   if (user) {
     const templateVars = {
-      user: users[req.session["user_id"]],
+      user: users[userID],
       error: "ERROR 400, The account already exist",
     };
     res.render("urls_register", templateVars);
@@ -315,7 +319,7 @@ app.post("/register", (req, res) => {
       password: hash
     };
     console.log(users);
-    req.session.user_id = id;
+    userID= id;
     res.redirect("/urls");
   });
 });
@@ -328,8 +332,8 @@ app.get("/login", (req, res) => {
   }
 
   const templateVars = {
-    user: users[req.session["user_id"]],
-    error: ""
+    error: "",
+    user
   };
   res.render("urls_login", templateVars);
 });
