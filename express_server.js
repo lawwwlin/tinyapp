@@ -65,6 +65,11 @@ app.get("/urls", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
+  const userId = req.cookies.userId;
+  if (!userId) {
+    res.redirect("/login");
+    return;
+  }
   const templateVars = { user: users[req.cookies["user_id"]], };
   res.render("urls_new", templateVars);
 });
@@ -94,6 +99,10 @@ app.post("/urls/:shortURL", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
+  const userId = req.cookies.userId;
+  if (!userId) {
+    return res.status(401).send('you are not authorized to be here');
+  }
   const shortURL = generateRandomString();
   const longURL = req.body.longURL;
   urlDatabase[shortURL] = longURL;
