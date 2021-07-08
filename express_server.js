@@ -135,7 +135,7 @@ app.get("/urls/:shortURL", (req, res) => {
     const templateVars = {
       urls,
       user: users[userID],
-      error: `You don't have access to the shortened URL: ${url}`
+      error: `ERROR 401! You don't have access to the shortened URL: ${url}`
     };
     return res.render("urls_index", templateVars);
   }
@@ -151,7 +151,7 @@ app.get("/urls/:shortURL", (req, res) => {
     const templateVars = {
       user: users[req.cookies["user_id"]],
       shortURL: url,
-      longURL: 'ERROR! The shortened URL does not exist'
+      longURL: 'ERROR 404! The shortened URL does not exist'
     };
     res.render("urls_show", templateVars);
   }
@@ -207,7 +207,7 @@ app.get("/u/:shortURL", (req, res) => {
     const templateVars = {
       user: users[req.cookies["user_id"]],
       shortURL: req.params.shortURL,
-      longURL: 'ERROR! The shortened URL does not exist'
+      longURL: 'ERROR 404! The shortened URL does not exist'
     };
     res.render("urls_show", templateVars);
   }
