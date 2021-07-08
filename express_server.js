@@ -165,6 +165,15 @@ app.get("/urls/:shortURL", (req, res) => {
 app.post("/urls/:shortURL", (req, res) => {
   const userID = req.cookies.user_id;
   const url = req.params.shortURL;
+
+  if (!userID) {
+    return res.status(401).send("You are not logged in... You don't have access to the shortened URL\n");
+  }
+
+  if (userID !== urlDatabase[url].userID) {
+    return res.status(401).send(`You don't have access to the shortened URL: ${url}\n`);
+  }
+  
   urlDatabase[url] = { 
     userID,
     longURL: req.body.newUrl
@@ -176,7 +185,7 @@ app.post("/urls", (req, res) => {
   const userID = req.cookies.user_id;
 
   if (!userID) {
-    return res.status(401).send('You are not authorized to be here');
+    return res.redirect("/urls");
   }
 
   const shortURL = generateRandomString();
@@ -210,7 +219,18 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 app.post("/urls/:shortURL/delete", (req, res) => {
-  delete urlDatabase[req.params.shortURL];
+  const userID = req.cookies.user_id;
+  const url = req.params.shortURL;
+
+  if (!userID) {
+    return res.status(401).send("You are not logged in to delete the URL\n");
+  }
+
+  if (userID !== urlDatabase[url].userID) {
+    return res.status(401).send("Stop hacking!!! You are deleting other people's URL...\n");
+  }
+
+  delete urlDatabase[url];
   res.redirect("/urls");
 });
 
