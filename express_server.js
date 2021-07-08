@@ -158,7 +158,7 @@ app.get("/urls/:shortURL", (req, res) => {
       shortURL: url,
       longURL: 'ERROR! The shortened URL does not exist'
     };
-    res.render("urls_dne", templateVars);
+    res.render("urls_show", templateVars);
   }
 });
 
@@ -214,7 +214,7 @@ app.get("/u/:shortURL", (req, res) => {
       shortURL: req.params.shortURL,
       longURL: 'ERROR! The shortened URL does not exist'
     };
-    res.render("urls_dne", templateVars);
+    res.render("urls_show", templateVars);
   }
 });
 
