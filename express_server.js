@@ -270,6 +270,13 @@ app.post("/logout", (req, res) => {
 });
 
 app.get("/register", (req, res) => {
+  const userID = req.session.user_id;
+  const user = users[userID];
+
+  if (user) {
+    return res.redirect("/urls")
+  }
+
   const templateVars = {
     user: users[req.session["user_id"]],
     error: ""
@@ -314,6 +321,12 @@ app.post("/register", (req, res) => {
 });
 
 app.get("/login", (req, res) => {
+  const userID = req.session.user_id;
+  const user = users[userID];
+  if (user) {
+    return res.redirect("/urls")
+  }
+
   const templateVars = {
     user: users[req.session["user_id"]],
     error: ""
