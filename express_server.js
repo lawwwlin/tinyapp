@@ -94,29 +94,20 @@ app.get("/urls", (req, res) => {
     urls[urlId] = userUrls[urlId].longURL;
   }
 
-  if (!userId) {
-    const templateVars = {
-      urls,
-      user,
-      error: "Uh oh... You are not logged in... Please log in or register first!"
-    };
-    return res.render("urls_index", templateVars);
-  }
-
-  if (!userUrls){
-    const templateVars = {
-      urls,
-      user,
-      error: ""
-    };
-    return res.render("urls_index", templateVars);
-  }
-
   const templateVars = {
     urls,
     user,
     error: ""
   };
+
+  if (!userId) {
+    templateVars.error = "Uh oh... You are not logged in... Please log in or register first!";
+    return res.render("urls_index", templateVars);
+  }
+
+  if (!userUrls){
+    return res.render("urls_index", templateVars);
+  }
 
   res.render("urls_index", templateVars);
 });
@@ -134,6 +125,7 @@ app.get("/urls/new", (req, res) => {
 
 app.get("/urls/:shortURL", (req, res) => {
   const url = req.params.shortURL;
+
   if (urlDatabase[url]) {
     const templateVars = {
       user: users[req.cookies["user_id"]],
@@ -152,30 +144,34 @@ app.get("/urls/:shortURL", (req, res) => {
 });
 
 app.post("/urls/:shortURL", (req, res) => {
-  const userId = req.cookies.user_id;
+  const userID = req.cookies.user_id;
   const url = req.params.shortURL;
   urlDatabase[url] = { 
-    userId,
+    userID,
     longURL: req.body.newUrl
   };
   res.redirect(`/urls/${url}`);
 });
 
 app.post("/urls", (req, res) => {
-  const userId = req.cookies.user_id;
-  if (!userId) {
+  const userID = req.cookies.user_id;
+
+  if (!userID) {
     return res.status(401).send('You are not authorized to be here');
   }
+
   const shortURL = generateRandomString();
   const longURL = req.body.longURL;
+
   urlDatabase[shortURL] = { 
-    userId,
-    longURL: req.body.newUrl
+    userID,
+    longURL
   };
+
   const templateVars = { 
     shortURL,
     longURL,
-    user: users[req.cookies["user_id"]]
+    user: users[userID]
     };
   res.render("urls_show", templateVars);
 });
