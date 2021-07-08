@@ -32,4 +32,4 @@ const filterData = (userID, database) => {
 module.exports = {
   findUserByEmail,
   filterData
- };
+};
