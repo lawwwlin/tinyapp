@@ -19,17 +19,7 @@ const generateRandomString = () => {
   return Math.random().toString(36).substr(2, 6);
 };
 
-// from Lecture: HTTP Cookies & User Authentication - W03D3 by Andy Lindsay
-const findUserByEmail = (email, database) => {
-  for (const userID in database) {
-    const user = database[userID];
-    if (user.email === email) {
-      return user;
-    }
-  }
-
-  return null;
-};
+const {findUserByEmail} = require("./herlper");
 
 const filterData = (userID) => {
   const filteredData = {};
