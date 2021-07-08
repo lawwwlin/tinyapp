@@ -20,9 +20,9 @@ const generateRandomString = () => {
 };
 
 // from Lecture: HTTP Cookies & User Authentication - W03D3 by Andy Lindsay
-const findUserByEmail = (email) => {
-  for (const userId in users) {
-    const user = users[userId];
+const findUserByEmail = (email, database) => {
+  for (const userID in database) {
+    const user = database[userID];
     if (user.email === email) {
       return user;
     }
@@ -239,7 +239,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 app.post("/login", (req, res) => {
   const userID = req.session.user_id;
   const email = req.body.email;
-  const user = findUserByEmail(email);
+  const user = findUserByEmail(email, users);
   const password = req.body.password;
 
   if (!email || !password || !user) {
@@ -302,7 +302,7 @@ app.post("/register", (req, res) => {
     return;
   }
   
-  const user = findUserByEmail(email);
+  const user = findUserByEmail(email, users);
   if (user) {
     const templateVars = {
       user: users[userID],
