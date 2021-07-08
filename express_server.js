@@ -131,7 +131,16 @@ app.get("/urls/:shortURL", (req, res) => {
     return res.redirect("/urls");
   }
 
-  if (!urlDatabase[url] || userID !== urlDatabase[url].userID) {
+  if (!urlDatabase[url]) {
+    const templateVars = {
+      user: users[req.cookies["user_id"]],
+      shortURL: url,
+      longURL: 'ERROR 404! The shortened URL does not exist'
+    };
+    res.render("urls_show", templateVars);
+  }
+
+  if (userID !== urlDatabase[url].userID) {
     const templateVars = {
       urls,
       user: users[userID],
@@ -140,21 +149,12 @@ app.get("/urls/:shortURL", (req, res) => {
     return res.render("urls_index", templateVars);
   }
 
-  if (urlDatabase[url]) {
-    const templateVars = {
-      user: users[req.cookies["user_id"]],
-      shortURL: url,
-      longURL: urlDatabase[url].longURL
-    };
-    res.render("urls_show", templateVars);
-  } else {
-    const templateVars = {
-      user: users[req.cookies["user_id"]],
-      shortURL: url,
-      longURL: 'ERROR 404! The shortened URL does not exist'
-    };
-    res.render("urls_show", templateVars);
-  }
+  const templateVars = {
+    user: users[req.cookies["user_id"]],
+    shortURL: url,
+    longURL: urlDatabase[url].longURL
+  };
+  res.render("urls_show", templateVars);
 });
 
 app.post("/urls/:shortURL", (req, res) => {
