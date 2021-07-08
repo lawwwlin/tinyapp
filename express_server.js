@@ -176,10 +176,10 @@ app.post("/urls", (req, res) => {
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  const userID = req.session.user_id;
+  const url = req.body.shortURL;
 
-  if (database[userID]) {
-    const longURL = database[userID].longURL;
+  if (database[url]) {
+    const longURL = database[url].longURL;
     res.redirect(longURL);
   } else {
     const templateVars = {
