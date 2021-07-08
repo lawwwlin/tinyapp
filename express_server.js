@@ -319,7 +319,7 @@ app.post("/register", (req, res) => {
       password: hash
     };
     console.log(users);
-    userID= id;
+    req.session.user_id = id;
     res.redirect("/urls");
   });
 });
