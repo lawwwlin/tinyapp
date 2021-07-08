@@ -3,9 +3,13 @@ const app = express();
 const PORT = 8080; // default port 8080
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
-const cookieParser = require('cookie-parser');
-app.use(cookieParser());
 const bcrypt = require('bcrypt');
+
+const cookieSession = require('cookie-session')
+app.use(cookieSession({
+  name: 'session',
+  keys: ['key1', 'key2'],
+}))
 
 const morgan = require('morgan');
 app.use(morgan('dev'));
@@ -81,7 +85,7 @@ app.get("/urls.json", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  const userID = req.cookies.user_id;
+  const userID = req.session.user_id;
   const user = users[userID];
   const urls = {};
   const userUrls = filterData(userID);
@@ -109,17 +113,17 @@ app.get("/urls", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  const userID = req.cookies.user_id;
+  const userID = req.session.user_id;
   if (!userID) {
     return res.redirect("/login");
   }
 
-  const templateVars = { user: users[req.cookies["user_id"]], };
+  const templateVars = { user: users[req.session["user_id"]], };
   res.render("urls_new", templateVars);
 });
 
 app.get("/urls/:shortURL", (req, res) => {
-  const userID = req.cookies.user_id;
+  const userID = req.session.user_id;
   const url = req.params.shortURL;
   const urls = {};
   const userUrls = filterData(userID);
@@ -134,24 +138,24 @@ app.get("/urls/:shortURL", (req, res) => {
 
   if (!urlDatabase[url]) {
     const templateVars = {
-      user: users[req.cookies["user_id"]],
+      user: users[req.session["user_id"]],
       shortURL: url,
       longURL: 'ERROR 404! The shortened URL does not exist'
     };
-    res.render("urls_show", templateVars);
+    return res.render("urls_show", templateVars);
   }
 
   if (userID !== urlDatabase[url].userID) {
     const templateVars = {
       urls,
       user: users[userID],
-      error: `ERROR 401! You don't have access to the shortened URL: ${url}`
+      error: `ERROR 403! You don't have access to the shortened URL: ${url}`
     };
     return res.render("urls_index", templateVars);
   }
 
   const templateVars = {
-    user: users[req.cookies["user_id"]],
+    user: users[req.session["user_id"]],
     shortURL: url,
     longURL: urlDatabase[url].longURL
   };
@@ -159,7 +163,7 @@ app.get("/urls/:shortURL", (req, res) => {
 });
 
 app.post("/urls/:shortURL", (req, res) => {
-  const userID = req.cookies.user_id;
+  const userID = req.session.user_id;
   const url = req.params.shortURL;
 
   if (!userID) {
@@ -178,7 +182,7 @@ app.post("/urls/:shortURL", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
-  const userID = req.cookies.user_id;
+  const userID = req.session.user_id;
 
   if (!userID) {
     return res.redirect("/urls");
@@ -206,7 +210,7 @@ app.get("/u/:shortURL", (req, res) => {
     res.redirect(longURL);
   } else {
     const templateVars = {
-      user: users[req.cookies["user_id"]],
+      user: users[req.session["user_id"]],
       shortURL: req.params.shortURL,
       longURL: 'ERROR 404! The shortened URL does not exist'
     };
@@ -215,7 +219,7 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 app.post("/urls/:shortURL/delete", (req, res) => {
-  const userID = req.cookies.user_id;
+  const userID = req.session.user_id;
   const url = req.params.shortURL;
 
   if (!userID) {
@@ -237,7 +241,7 @@ app.post("/login", (req, res) => {
 
   if (!email || !password || !user) {
     const templateVars = {
-      user: users[req.cookies["user_id"]],
+      user: users[req.session["user_id"]],
       error: "ERROR 400, Incorrect Email or Password"
     };
   
@@ -247,7 +251,7 @@ app.post("/login", (req, res) => {
   bcrypt.compare(password, user.password, (err, result) => {
     if (!result) {
       const templateVars = {
-        user: users[req.cookies["user_id"]],
+        user: users[req.session["user_id"]],
         error: "ERROR 400, Incorrect Email or Password"
       };
     
@@ -255,19 +259,19 @@ app.post("/login", (req, res) => {
     }
 
     console.log("correct user login");
-    res.cookie("user_id", user.id);
+    req.session.user_id = user.id;
     return res.redirect("/urls");
   });
 });
 
 app.post("/logout", (req, res) => {
-  res.clearCookie("user_id");
+  req.session = null;
   res.redirect("/urls");
 });
 
 app.get("/register", (req, res) => {
   const templateVars = {
-    user: users[req.cookies["user_id"]],
+    user: users[req.session["user_id"]],
     error: ""
   };
   res.render("urls_register", templateVars);
@@ -280,7 +284,7 @@ app.post("/register", (req, res) => {
   
   if (!email || !password) {
     const templateVars = {
-      user: users[req.cookies["user_id"]],
+      user: users[req.session["user_id"]],
       error: "ERROR 400, Email or Password field is empty",
     };
     res.render("urls_register", templateVars);
@@ -290,7 +294,7 @@ app.post("/register", (req, res) => {
   const user = findUserByEmail(email);
   if (user) {
     const templateVars = {
-      user: users[req.cookies["user_id"]],
+      user: users[req.session["user_id"]],
       error: "ERROR 400, The account already exist",
     };
     res.render("urls_register", templateVars);
@@ -304,14 +308,14 @@ app.post("/register", (req, res) => {
       password: hash
     };
     console.log(users);
-    res.cookie("user_id", id);
+    req.session.user_id = id;
     res.redirect("/urls");
   });
 });
 
 app.get("/login", (req, res) => {
   const templateVars = {
-    user: users[req.cookies["user_id"]],
+    user: users[req.session["user_id"]],
     error: ""
   };
   res.render("urls_login", templateVars);
