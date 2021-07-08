@@ -5,11 +5,11 @@ const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
 const bcrypt = require('bcrypt');
 
-const cookieSession = require('cookie-session')
+const cookieSession = require('cookie-session');
 app.use(cookieSession({
   name: 'session',
   keys: ['key1', 'key2'],
-}))
+}));
 
 const morgan = require('morgan');
 app.use(morgan('dev'));
@@ -248,7 +248,7 @@ app.get("/register", (req, res) => {
   const user = users[userID];
 
   if (user) {
-    return res.redirect("/urls")
+    return res.redirect("/urls");
   }
 
   const templateVars = {
@@ -299,7 +299,7 @@ app.get("/login", (req, res) => {
   const userID = req.session.user_id;
   const user = users[userID];
   if (user) {
-    return res.redirect("/urls")
+    return res.redirect("/urls");
   }
 
   const templateVars = {
