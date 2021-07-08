@@ -29,6 +29,9 @@
           <label><b>Email</b></label><input type="email" name="email" placeholder="Enter Email"><br /><br />
           <label><b>Password</b></label><input type="password" name="password" placeholder="Enter Password"><br /><br />
           <button type="submit" class="button" style="vertical-align:middle; width: 200px"><span>LOG IN</span></button></form>
+          <% if(error) { %>
+            <h5 style="color: red"><%= error%></h5>
+          <% } %>
       </div>
     <div class="card-footer text-muted"></div>
   </div>

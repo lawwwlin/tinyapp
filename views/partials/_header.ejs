@@ -54,8 +54,10 @@
         <form method="post" action="/logout">Logged In As: <%= user.email %><button class="button"> <span>Logout</span>
         </button></form>
       <% } else { %>
-        <form method="post" action="/login"><input type="text" name="username" placeholder="username"><button class="button"><span>Login</span>
-        </button></form>
+        <a href="/login"><button class="button"><span>Login</span>
+        </button></form></a>
+        <a href="/register"><button class="button"><span>register</span>
+        </button></form></a>
       <% } %>
       </div>
   </nav>
