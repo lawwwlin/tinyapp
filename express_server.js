@@ -33,7 +33,6 @@ const filterData = (userID) => {
     const url = urlDatabase[shortURL];
     if (url.userID === userID) {
       filteredData[shortURL] = {
-        userID,
         longURL: url.longURL
       };
     }
@@ -85,13 +84,13 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  const userId = req.cookies.user_id;
-  const user = users[userId];
+  const userID = req.cookies.user_id;
+  const user = users[userID];
   const urls = {};
-  const userUrls = filterData(userId);
+  const userUrls = filterData(userID);
   
-  for (const urlId in userUrls) {
-    urls[urlId] = userUrls[urlId].longURL;
+  for (const urlID in userUrls) {
+    urls[urlID] = userUrls[urlID].longURL;
   }
 
   const templateVars = {
@@ -100,7 +99,7 @@ app.get("/urls", (req, res) => {
     error: ""
   };
 
-  if (!userId) {
+  if (!userID) {
     templateVars.error = "Uh oh... You are not logged in... Please log in or register first!";
     return res.render("urls_index", templateVars);
   }
@@ -113,8 +112,8 @@ app.get("/urls", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  const userId = req.cookies.user_id;
-  if (!userId) {
+  const userID = req.cookies.user_id;
+  if (!userID) {
     res.redirect("/login");
     return;
   }
@@ -124,7 +123,27 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/:shortURL", (req, res) => {
+  const userID = req.cookies.user_id;
   const url = req.params.shortURL;
+  const urls = {};
+  const userUrls = filterData(userID);
+  
+  for (const urlID in userUrls) {
+    urls[urlID] = userUrls[urlID].longURL;
+  }
+
+  if (!userID) {
+    return res.redirect("/urls");
+  }
+
+  if (urlDatabase[url] && !userUrls) {
+    const templateVars = {
+      urls,
+      user: users[userID],
+      error: `You don't have access to the shortened URL: ${url}`
+    };
+    return res.render("urls_index", templateVars);
+  }
 
   if (urlDatabase[url]) {
     const templateVars = {
