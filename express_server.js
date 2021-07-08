@@ -65,12 +65,11 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  const userId = req.cookies.userId;
-  if (!userId) {
-    res.redirect("/login");
-    return;
-  }
-
+  // const userId = req.cookies.userId;
+  // if (!userId) {
+  //   res.redirect("/login");
+  //   return;
+  // }
   const urls = {};
   for (const urlId in urlDatabase) {
     urls[urlId] = urlDatabase[urlId].longURL;
@@ -106,7 +105,7 @@ app.get("/urls/:shortURL", (req, res) => {
     const templateVars = {
       user: users[req.cookies["user_id"]],
       shortURL: url,
-      longURL: 'The Shotened URL Does Not Exist' 
+      longURL: 'ERROR! The Shotened URL Does Not Exist' 
     };
     res.render("urls_dne", templateVars);
   }
@@ -149,7 +148,7 @@ app.get("/u/:shortURL", (req, res) => {
     const templateVars = {
       user: users[req.cookies["user_id"]],
       shortURL: req.params.shortURL,
-      longURL: 'The Shortened URL Does Not Exist' };
+      longURL: 'ERROR! The Shortened URL Does Not Exist' };
     res.render("urls_dne", templateVars);
   }
 });
