@@ -10,4 +10,26 @@ const findUserByEmail = (email, database) => {
   return null;
 };
 
-module.exports = { findUserByEmail };
+const filterData = (userID, database) => {
+  const filteredData = {};
+
+  for (const shortURL in database) {
+    const url = database[shortURL];
+    if (url.userID === userID) {
+      filteredData[shortURL] = {
+        longURL: url.longURL
+      };
+    }
+  }
+
+  if (Object.keys(filteredData).length === 0) {
+    return null;
+  }
+
+  return filteredData;
+};
+
+module.exports = {
+  findUserByEmail,
+  filterData
+ };

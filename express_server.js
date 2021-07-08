@@ -19,30 +19,11 @@ const generateRandomString = () => {
   return Math.random().toString(36).substr(2, 6);
 };
 
-const {findUserByEmail} = require("./herlper");
-
-const filterData = (userID) => {
-  const filteredData = {};
-
-  for (const shortURL in urlDatabase) {
-    const url = urlDatabase[shortURL];
-    if (url.userID === userID) {
-      filteredData[shortURL] = {
-        longURL: url.longURL
-      };
-    }
-  }
-
-  if (Object.keys(filteredData).length === 0) {
-    return null;
-  }
-
-  return filteredData;
-};
+const { findUserByEmail, filterData } = require("./herlper");
 
 app.set("view engine", "ejs");
 
-const urlDatabase = {
+const database = {
   b6UTxQ: {
     longURL: "https://www.tsn.ca",
     userID: "aaaaa"
@@ -71,14 +52,14 @@ app.get("/", (req, res) => {
 });
 
 app.get("/urls.json", (req, res) => {
-  res.json(urlDatabase);
+  res.json(database);
 });
 
 app.get("/urls", (req, res) => {
   const userID = req.session.user_id;
   const user = users[userID];
   const urls = {};
-  const userUrls = filterData(userID);
+  const userUrls = filterData(userID, database);
   
   for (const urlID in userUrls) {
     urls[urlID] = userUrls[urlID].longURL;
@@ -116,7 +97,7 @@ app.get("/urls/:shortURL", (req, res) => {
   const userID = req.session.user_id;
   const url = req.params.shortURL;
   const urls = {};
-  const userUrls = filterData(userID);
+  const userUrls = filterData(userID, database);
   
   for (const urlID in userUrls) {
     urls[urlID] = userUrls[urlID].longURL;
@@ -126,7 +107,7 @@ app.get("/urls/:shortURL", (req, res) => {
     return res.redirect("/urls");
   }
 
-  if (!urlDatabase[url]) {
+  if (!database[url]) {
     const templateVars = {
       user: users[userID],
       shortURL: url,
@@ -135,7 +116,7 @@ app.get("/urls/:shortURL", (req, res) => {
     return res.render("urls_show", templateVars);
   }
 
-  if (userID !== urlDatabase[url].userID) {
+  if (userID !== database[url].userID) {
     const templateVars = {
       urls,
       user: users[userID],
@@ -147,7 +128,7 @@ app.get("/urls/:shortURL", (req, res) => {
   const templateVars = {
     user: users[userID],
     shortURL: url,
-    longURL: urlDatabase[url].longURL
+    longURL: database[url].longURL
   };
   res.render("urls_show", templateVars);
 });
@@ -160,11 +141,11 @@ app.post("/urls/:shortURL", (req, res) => {
     return res.status(401).send("You are not logged in... You don't have access to the shortened URL\n");
   }
 
-  if (userID !== urlDatabase[url].userID) {
+  if (userID !== database[url].userID) {
     return res.status(403).send(`You don't have access to the shortened URL: ${url}\n`);
   }
   
-  urlDatabase[url] = {
+  database[url] = {
     userID,
     longURL: req.body.newUrl
   };
@@ -181,7 +162,7 @@ app.post("/urls", (req, res) => {
   const shortURL = generateRandomString();
   const longURL = req.body.longURL;
 
-  urlDatabase[shortURL] = {
+  database[shortURL] = {
     userID,
     longURL
   };
@@ -197,8 +178,8 @@ app.post("/urls", (req, res) => {
 app.get("/u/:shortURL", (req, res) => {
   const userID = req.session.user_id;
 
-  if (urlDatabase[userID]) {
-    const longURL = urlDatabase[userID].longURL;
+  if (database[userID]) {
+    const longURL = database[userID].longURL;
     res.redirect(longURL);
   } else {
     const templateVars = {
@@ -218,11 +199,11 @@ app.post("/urls/:shortURL/delete", (req, res) => {
     return res.status(401).send("You are not logged in to delete the URL\n");
   }
 
-  if (userID !== urlDatabase[url].userID) {
+  if (userID !== database[url].userID) {
     return res.status(403).send("Stop hacking!!! You are deleting other people's URL...\n");
   }
 
-  delete urlDatabase[url];
+  delete database[url];
   res.redirect("/urls");
 });
 
