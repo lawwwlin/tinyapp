@@ -19,7 +19,7 @@ const generateRandomString = () => {
   return Math.random().toString(36).substr(2, 6);
 };
 
-const { findUserByEmail, filterData } = require("./herlper");
+const { findUserByEmail, filterData } = require("./helpers");
 
 app.set("view engine", "ejs");
 
