@@ -5,6 +5,7 @@ const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
 const cookieParser = require('cookie-parser');
 app.use(cookieParser());
+const bcrypt = require('bcrypt');
 
 const morgan = require('morgan');
 app.use(morgan('dev'));
@@ -62,12 +63,12 @@ const users = {
   "aaaaa": {
     id: "aaaaa",
     email: "a@a.com",
-    password: "1234"
+    password: "$2b$10$IDTR/WU9NMAMgVCuSoR8cuiWHQeJbroxAn1jyUAIdbYZtRg6Qnbhy"
   },
   "bbbbb": {
     id: "bbbbb",
     email: "b@b.com",
-    password: "1234"
+    password: "$2b$10$eJ.9MxJZWL1qA.yICRIR9ePR.1ML4MpoP68izZPZ/0KQ2RQA1JFkG"
   }
 };
 
@@ -234,19 +235,29 @@ app.post("/login", (req, res) => {
   const user = findUserByEmail(email);
   const password = req.body.password;
 
-  if (user) {
-    if (user.password === password) {
-      res.cookie("user_id", user.id);
-      return res.redirect("/urls");
-    }
+  if (!email || !password || !user) {
+    const templateVars = {
+      user: users[req.cookies["user_id"]],
+      error: "ERROR 400, Incorrect Email or Password"
+    };
+  
+    return res.render("urls_login", templateVars);
   }
 
-  const templateVars = {
-    user: users[req.cookies["user_id"]],
-    error: "ERROR 403, Incorrect Email or Password"
-  };
+  bcrypt.compare(password, user.password, (err, result) => {
+    if (!result) {
+      const templateVars = {
+        user: users[req.cookies["user_id"]],
+        error: "ERROR 400, Incorrect Email or Password"
+      };
+    
+      return res.render("urls_login", templateVars);
+    }
 
-  res.render("urls_login", templateVars);
+    console.log("correct user login");
+    res.cookie("user_id", user.id);
+    return res.redirect("/urls");
+  });
 });
 
 app.post("/logout", (req, res) => {
@@ -266,7 +277,7 @@ app.post("/register", (req, res) => {
   const id = generateRandomString();
   const email = req.body.email;
   const password = req.body.password;
-
+  
   if (!email || !password) {
     const templateVars = {
       user: users[req.cookies["user_id"]],
@@ -275,7 +286,7 @@ app.post("/register", (req, res) => {
     res.render("urls_register", templateVars);
     return;
   }
-
+  
   const user = findUserByEmail(email);
   if (user) {
     const templateVars = {
@@ -286,14 +297,16 @@ app.post("/register", (req, res) => {
     return;
   }
 
-  users[id] = {
-    id,
-    email,
-    password
-  };
-  res.cookie("user_id", id);
-  console.log(users);
-  res.redirect("/urls");
+  bcrypt.hash(password, 10, (err, hash) => {
+    users[id] = {
+      id,
+      email,
+      password: hash
+    };
+    console.log(users);
+    res.cookie("user_id", id);
+    res.redirect("/urls");
+  });
 });
 
 app.get("/login", (req, res) => {
