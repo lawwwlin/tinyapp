@@ -22,7 +22,28 @@ const findUserByEmail = (email) => {
       return user;
     }
   }
+
   return null;
+};
+
+const filterData = (userID) => {
+  const filteredData = {};
+
+  for (const shortURL in urlDatabase) {
+    const url = urlDatabase[shortURL];
+    if (url.userID === userID) {
+      filteredData[shortURL] = {
+        userID,
+        longURL: url.longURL
+      };
+    }
+  }
+
+  if (Object.keys(filteredData).length === 0) {
+    return null;
+  }
+
+  return filteredData;
 };
 
 app.set("view engine", "ejs");
@@ -37,7 +58,6 @@ const urlDatabase = {
       userID: "aaaaa"
   }
 };
-
 
 const users = { 
   "aaaaa": {
@@ -65,24 +85,44 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  // const userId = req.cookies.userId;
-  // if (!userId) {
-  //   res.redirect("/login");
-  //   return;
-  // }
+  const userId = req.cookies.user_id;
+  const user = users[userId];
   const urls = {};
-  for (const urlId in urlDatabase) {
-    urls[urlId] = urlDatabase[urlId].longURL;
+  const userUrls = filterData(userId);
+  
+  for (const urlId in userUrls) {
+    urls[urlId] = userUrls[urlId].longURL;
   }
+
+  if (!userId) {
+    const templateVars = {
+      urls,
+      user,
+      error: "Uh oh... You are not logged in... Please log in or register first!"
+    };
+    return res.render("urls_index", templateVars);
+  }
+
+  if (!userUrls){
+    const templateVars = {
+      urls,
+      user,
+      error: ""
+    };
+    return res.render("urls_index", templateVars);
+  }
+
   const templateVars = {
-    user: users[req.cookies["user_id"]],
-    urls
+    urls,
+    user,
+    error: ""
   };
+
   res.render("urls_index", templateVars);
 });
 
 app.get("/urls/new", (req, res) => {
-  const userId = req.cookies.userId;
+  const userId = req.cookies.user_id;
   if (!userId) {
     res.redirect("/login");
     return;
@@ -105,14 +145,14 @@ app.get("/urls/:shortURL", (req, res) => {
     const templateVars = {
       user: users[req.cookies["user_id"]],
       shortURL: url,
-      longURL: 'ERROR! The Shotened URL Does Not Exist' 
+      longURL: 'ERROR! The shortened URL does not exist'
     };
     res.render("urls_dne", templateVars);
   }
 });
 
 app.post("/urls/:shortURL", (req, res) => {
-  const userId = req.cookies.userId;
+  const userId = req.cookies.user_id;
   const url = req.params.shortURL;
   urlDatabase[url] = { 
     userId,
@@ -122,9 +162,9 @@ app.post("/urls/:shortURL", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
-  const userId = req.cookies.userId;
+  const userId = req.cookies.user_id;
   if (!userId) {
-    return res.status(401).send('you are not authorized to be here');
+    return res.status(401).send('You are not authorized to be here');
   }
   const shortURL = generateRandomString();
   const longURL = req.body.longURL;
@@ -148,7 +188,8 @@ app.get("/u/:shortURL", (req, res) => {
     const templateVars = {
       user: users[req.cookies["user_id"]],
       shortURL: req.params.shortURL,
-      longURL: 'ERROR! The Shortened URL Does Not Exist' };
+      longURL: 'ERROR! The shortened URL does not exist'
+    };
     res.render("urls_dne", templateVars);
   }
 });
@@ -162,17 +203,19 @@ app.post("/login", (req, res) => {
   const email = req.body.email;
   const user = findUserByEmail(email);
   const password = req.body.password;
+
   if (user) {
     if (user.password === password) {
       res.cookie("user_id", user.id);
-      res.redirect("/urls");
-      return;
+      return res.redirect("/urls");
     }
   }
+
   const templateVars = { 
     user: users[req.cookies["user_id"]],
     error: "ERROR 403, Incorrect Email or Password" 
   };
+
   res.render("urls_login", templateVars);
 });
 
@@ -197,7 +240,7 @@ app.post("/register", (req, res) => {
   if (!email || !password) {
     const templateVars = {
       user: users[req.cookies["user_id"]],
-      error: "ERROR 400, Email or Password Field is Empty",
+      error: "ERROR 400, Email or Password field is empty",
     };
     res.render("urls_register", templateVars)
     return;
@@ -207,7 +250,7 @@ app.post("/register", (req, res) => {
   if (user) {
     const templateVars = {
       user: users[req.cookies["user_id"]],
-      error: "ERROR 400, The Account Already Exist",
+      error: "ERROR 400, The account already exist",
     };
     res.render("urls_register", templateVars)
     return;
