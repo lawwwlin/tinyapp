@@ -12,9 +12,9 @@ TinyApp is a full stack web application built with Node and Express that allows 
 
 !["Screenshot of URLs page while logged in"](https://github.com/lawwwlin/tinyapp/blob/main/docs/urls-page.png)
 
-!["Screenshot of new URL page"](https://github.com/lawwwlin/tinyapp/blob/main/docs/new-url-page.png)
-
 !["Screenshot of URL edit page"](https://github.com/lawwwlin/tinyapp/blob/main/docs/edit-url-page.png)
+
+!["Screenshot of new URL page"](https://github.com/lawwwlin/tinyapp/blob/main/docs/new-url-page.png)
 
 ## Dependencies
 
