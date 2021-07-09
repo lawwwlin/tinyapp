@@ -1,25 +1,28 @@
 const express = require('express');
+const bodyParser = require("body-parser");
+const cookieSession = require('cookie-session');
+const morgan = require('morgan');
+const bcrypt = require('bcrypt');
+const methodOverride = require('method-override');
+
+const { findUserByEmail, filterData } = require("./helpers");
+
 const app = express();
 const PORT = 8080; // default port 8080
-const bodyParser = require("body-parser");
-app.use(bodyParser.urlencoded({extended: true}));
-const bcrypt = require('bcrypt');
 
-const cookieSession = require('cookie-session');
+app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieSession({
   name: 'session',
   keys: ['key1', 'key2'],
 }));
-
-const morgan = require('morgan');
 app.use(morgan('dev'));
+app.use(methodOverride('_method'));
+
 
 // from Stack Overflow https://stackoverflow.com/questions/1349404/generate-random-string-characters-in-javascript
 const generateRandomString = () => {
   return Math.random().toString(36).substr(2, 6);
 };
-
-const { findUserByEmail, filterData } = require("./helpers");
 
 app.set("view engine", "ejs");
 
@@ -132,7 +135,7 @@ app.get("/urls/:shortURL", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
-app.post("/urls/:shortURL", (req, res) => {
+app.put("/urls/:shortURL", (req, res) => {
   const userID = req.session.user_id;
   const url = req.params.shortURL;
 
@@ -186,7 +189,7 @@ app.get("/u/:shortURL", (req, res) => {
   }
 });
 
-app.post("/urls/:shortURL/delete", (req, res) => {
+app.delete("/urls/:shortURL", (req, res) => {
   const userID = req.session.user_id;
   const url = req.params.shortURL;
 
@@ -202,7 +205,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   res.redirect("/urls");
 });
 
-app.post("/login", (req, res) => {
+app.patch("/login", (req, res) => {
   const userID = req.session.user_id;
   const email = req.body.email;
   const user = findUserByEmail(email, users);
@@ -232,7 +235,7 @@ app.post("/login", (req, res) => {
   });
 });
 
-app.post("/logout", (req, res) => {
+app.patch("/logout", (req, res) => {
   req.session = null;
   res.redirect("/urls");
 });

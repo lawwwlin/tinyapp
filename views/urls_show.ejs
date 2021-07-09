@@ -18,7 +18,7 @@
         <% } else {%>
           <div class="card-header"><h3>TinyURL for: <%= longURL %></h3>
           <h4>Short URL: <a href="/u/<%= shortURL %>"><%= shortURL %></a></h4></div>
-          <div class="card-body"><form method="POST" action="/urls/<%= shortURL %>">
+          <div class="card-body"><form method="POST" action="/urls/<%= shortURL %>?_method=PUT">
           <h3 class="card-text" style= "color: grey">Edit</h3>New URL:
           <input type="text" name="newUrl" placeholder="<%= longURL %>" style="width: 300px; margin: 1em">
           <button type="submit" class="button" style="vertical-align:middle; color: red; border: 2px solid red; background-color: white"><span>Update</span></button>

@@ -51,13 +51,13 @@
     </div>
     <div>
       <% if(user) { %>
-        <form method="post" action="/logout" style="color: white">Logged in as: <%= user.email %><button class="button"> <span>Logout</span>
+        <form method="post" action="/logout?_method=PATCH" style="color: white">Logged in as: <%= user.email %><button class="button"> <span>Logout</span>
         </button></form>
       <% } else { %>
         <a href="/login"><button class="button"><span>Login</span>
-        </button></form></a>
+        </button></a>
         <a href="/register"><button class="button"><span>Register</span>
-        </button></form></a>
+        </button></a>
       <% } %>
       </div>
   </nav>
