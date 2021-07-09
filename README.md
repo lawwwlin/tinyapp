@@ -30,3 +30,6 @@ TinyApp is a full stack web application built with Node and Express that allows 
 
 - Install all dependencies (using the `npm install` command).
 - Run the development web server using the `node express_server.js` command.
+
+## Bonus Feature
+- URLs index and individual URL page will display the creation date of the URL. Editing the URL does not change the creation date. Default URLs provided to account a@a.com will have the date and time which server started at as the creation date. 
