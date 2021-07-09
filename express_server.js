@@ -108,33 +108,27 @@ app.get("/urls/:shortURL", (req, res) => {
     urls[urlID] = userUrls[urlID].longURL;
   }
 
+  const templateVars = {
+    user: users[userID],
+    shortURL: url
+  };
+
   if (!userID) {
-    return res.redirect("/urls");
+    templateVars.longURL = "ERROR 401! You are not logged in... You cannot edit the shortened URL";
+    return res.render("urls_show", templateVars);
   }
 
   if (!database[url]) {
-    const templateVars = {
-      user: users[userID],
-      shortURL: url,
-      longURL: 'ERROR 404! The shortened URL does not exist'
-    };
+    templateVars.longURL = 'ERROR 404! The shortened URL does not exist';
     return res.render("urls_show", templateVars);
   }
 
   if (userID !== database[url].userID) {
-    const templateVars = {
-      urls,
-      user: users[userID],
-      error: `ERROR 403! You don't have access to the shortened URL: ${url}`
-    };
-    return res.render("urls_index", templateVars);
+    templateVars.longURL = "ERROR 403! You don't have access to edit the shortened URL";
+    return res.render("urls_show", templateVars);
   }
 
-  const templateVars = {
-    user: users[userID],
-    shortURL: url,
-    longURL: database[url].longURL
-  };
+  templateVars.longURL = database[url].longURL;
   res.render("urls_show", templateVars);
 });
 
