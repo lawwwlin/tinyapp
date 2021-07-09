@@ -148,14 +148,14 @@ app.post("/urls/:shortURL", (req, res) => {
     userID,
     longURL: req.body.newUrl
   };
-  res.redirect(`/urls/${url}`);
+  return res.redirect(`/urls/${url}`);
 });
 
 app.post("/urls", (req, res) => {
   const userID = req.session.user_id;
 
   if (!userID) {
-    return res.redirect("/urls");
+    return res.status(401).send("You are not logged in... You don't have access to add URL\n");
   }
 
   const shortURL = generateRandomString();
@@ -166,12 +166,7 @@ app.post("/urls", (req, res) => {
     longURL
   };
 
-  const templateVars = {
-    shortURL,
-    longURL,
-    user: users[userID]
-  };
-  res.render("urls_show", templateVars);
+  return res.redirect(`/urls/${shortURL}`);
 });
 
 app.get("/u/:shortURL", (req, res) => {
