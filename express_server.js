@@ -177,15 +177,15 @@ app.post("/urls", (req, res) => {
 
 app.get("/u/:shortURL", (req, res) => {
   const userID = req.session.user_id;
-  const url = req.body.shortURL;
+  const shortURL = req.params.shortURL;
 
-  if (database[url]) {
-    const longURL = database[url].longURL;
+  if (database[shortURL]) {
+    const longURL = database[shortURL].longURL;
     res.redirect(longURL);
   } else {
     const templateVars = {
+      shortURL,
       user: users[userID],
-      shortURL: req.params.shortURL,
       longURL: 'ERROR 404! The shortened URL does not exist'
     };
     res.render("urls_show", templateVars);
@@ -233,7 +233,6 @@ app.post("/login", (req, res) => {
       return res.render("urls_login", templateVars);
     }
 
-    console.log("correct user login");
     req.session.user_id = user.id;
     return res.redirect("/urls");
   });
@@ -290,7 +289,6 @@ app.post("/register", (req, res) => {
       email,
       password: hash
     };
-    console.log(users);
     req.session.user_id = id;
     res.redirect("/urls");
   });
@@ -311,5 +309,5 @@ app.get("/login", (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Example app listening on port ${PORT}!`);
+  console.log(`App listening on port ${PORT}!`);
 });
