@@ -148,7 +148,7 @@ app.post("/urls/:shortURL", (req, res) => {
     userID,
     longURL: req.body.newUrl
   };
-  return res.redirect(`/urls/${url}`);
+  res.redirect('/urls/');
 });
 
 app.post("/urls", (req, res) => {
@@ -166,7 +166,7 @@ app.post("/urls", (req, res) => {
     longURL
   };
 
-  return res.redirect(`/urls/${shortURL}`);
+  res.redirect(`/urls/${shortURL}`);
 });
 
 app.get("/u/:shortURL", (req, res) => {
