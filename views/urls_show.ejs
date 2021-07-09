@@ -13,7 +13,7 @@
   <div class="card text-center">
       <div class="card">
         <% if(longURL.substr(0, 5) === "ERROR") { %>
-          <div class="card-header"><h3><%= longURL %></h3>
+          <div class="card-header"><h3 style="color: red"><%= longURL %></h3>
           <h4>Short URL: <a href="/u/<%= shortURL %>"><%= shortURL %></a></h4></div>
         <% } else {%>
           <div class="card-header"><h3>TinyURL for: <%= longURL %></h3>
