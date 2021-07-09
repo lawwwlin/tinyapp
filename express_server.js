@@ -5,7 +5,7 @@ const morgan = require('morgan');
 const bcrypt = require('bcrypt');
 const methodOverride = require('method-override');
 
-const { findUserByEmail, filterData } = require("./helpers");
+const { findUserByEmail, filterData, dateNow } = require("./helpers");
 
 const app = express();
 const PORT = 8080; // default port 8080
@@ -29,11 +29,13 @@ app.set("view engine", "ejs");
 const database = {
   b6UTxQ: {
     longURL: "https://www.tsn.ca",
-    userID: "aaaaa"
+    userID: "aaaaa",
+    date: dateNow()
   },
   i3BoGr: {
     longURL: "https://www.google.ca",
-    userID: "aaaaa"
+    userID: "aaaaa",
+    date: dateNow()
   }
 };
 
@@ -70,7 +72,8 @@ app.get("/urls", (req, res) => {
   const userUrls = filterData(userID, database);
   
   for (const urlID in userUrls) {
-    urls[urlID] = userUrls[urlID].longURL;
+    const userObj = userUrls[urlID];
+    urls[urlID] = {longURL: userObj.longURL, date: userObj.date};
   }
 
   const templateVars = {
@@ -104,12 +107,6 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls/:shortURL", (req, res) => {
   const userID = req.session.user_id;
   const url = req.params.shortURL;
-  const urls = {};
-  const userUrls = filterData(userID, database);
-  
-  for (const urlID in userUrls) {
-    urls[urlID] = userUrls[urlID].longURL;
-  }
 
   const templateVars = {
     user: users[userID],
@@ -132,6 +129,7 @@ app.get("/urls/:shortURL", (req, res) => {
   }
 
   templateVars.longURL = database[url].longURL;
+  templateVars.date = database[url].date;
   res.render("urls_show", templateVars);
 });
 
@@ -149,6 +147,7 @@ app.put("/urls/:shortURL", (req, res) => {
   
   database[url] = {
     userID,
+    date: database[url].date,
     longURL: req.body.newUrl
   };
   res.redirect('/urls/');
@@ -166,7 +165,8 @@ app.post("/urls", (req, res) => {
 
   database[shortURL] = {
     userID,
-    longURL
+    longURL,
+    date: dateNow()
   };
 
   res.redirect(`/urls/${shortURL}`);

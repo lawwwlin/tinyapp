@@ -17,7 +17,8 @@ const filterData = (userID, database) => {
     const url = database[shortURL];
     if (url.userID === userID) {
       filteredData[shortURL] = {
-        longURL: url.longURL
+        longURL: url.longURL,
+        date: url.date
       };
     }
   }
@@ -29,7 +30,13 @@ const filterData = (userID, database) => {
   return filteredData;
 };
 
+const dateNow = () => {
+  const currentDate = new Date().toLocaleString();
+  return currentDate;
+};
+
 module.exports = {
   findUserByEmail,
-  filterData
+  filterData,
+  dateNow
 };
